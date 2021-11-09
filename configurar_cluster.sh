@@ -43,6 +43,8 @@ do
 			then
       	exit $? 
 			fi
+
+			echo -e "-------- $svc completado satisfactoriamente -------\n"
 			;;
 		*)
 		perror "El siguiente servicio no se ofrece: \n$svc"
