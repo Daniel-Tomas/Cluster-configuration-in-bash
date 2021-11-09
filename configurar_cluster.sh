@@ -1,5 +1,7 @@
 #!/bin/bash
 
+perror() { echo -e "$@" 1>&2; }
+
 input=$1
 while IFS= read -r line
 do
@@ -16,7 +18,7 @@ do
 
 	if [[ ! "$line" =~ $pattern ]] 
 	then  
-		echo -e "La siguiente linea no cumple con el formato correcto: \n$line"
+		perror "La siguiente linea no cumple con el formato correcto: \n$line"
 		exit 1
 	fi
 
@@ -26,13 +28,15 @@ do
 	svc_cf=${BASH_REMATCH[3]}
 	
 	case $svc in
-		mount | raid)
+		mount | nfs_server | nfs_client)
 			if [[ ! -f $svc_cf ]] || [[ ! -r $svc_cf ]] 
 			then
-				echo -e "El siguiente fichero de configuracion de servicio no existe o no se puede leer: \n$svc_cf"
+				perror "El siguiente fichero de configuracion de servicio no existe o no se puede leer: \n$svc_cf"
 	    			exit 2
 			fi
-
+			
+			# ssh -T $host : &> /dev/null
+			# echo $?
 			source ${svc}.sh
 			
 			if [[ $? -ne 0 ]] 
@@ -41,7 +45,7 @@ do
 			fi
 			;;
 		*)
-		echo -e "El siguiente servicio no se ofrece: \n$svc"
+		perror "El siguiente servicio no se ofrece: \n$svc"
 	    exit 3
   	  ;;
 	esac
