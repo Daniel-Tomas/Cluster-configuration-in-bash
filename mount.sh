@@ -8,16 +8,16 @@ then
 	exit 11
 fi
 
-scp $svc_cf ${host}:/root
+mv $svc_cf "conf"
+scp "conf ${host}:/root
 
 ssh -T $host << 'EOSSH'
 
 perror() { echo -e "$@" 1>&2; }
 
-# parse AQUI, LAS VARIABLES NO SE EXPANDEN
-
-dev="/dev/sdb"
-mount_point="/dir2"
+svc_cf="conf"
+read -r dev<$svc_cf
+mount_point=`sed "2q;d" $svc_cf`
 
 # Checks if device exists and is a block device
 if [[ ! -b $dev ]] ; 
@@ -31,6 +31,7 @@ then
 	mkdir $mount_point
 	if [[ $? -ne 0 ]] ; 
 	then
+		perror "Imposible crear el punto de montaje"
 		exit 13
 	fi
 
@@ -41,7 +42,11 @@ then
 	 exit 14
 fi
 
-echo "$dev $mount_point ext4 defaults 0 2" >> /etc/fstab
+# Check whether the mount instruction is already present in fstab
+if [ ! `grep -q "${dev}" /etc/fstab` ]
+then
+	echo "$dev $mount_point ext4 defaults 0 2" >> /etc/fstab
+fi
 mount -t ext4 $dev $mount_point
 
 if [[ $? -ne 0 ]] ; 
