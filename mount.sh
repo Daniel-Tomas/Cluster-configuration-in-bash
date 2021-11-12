@@ -8,8 +8,8 @@ then
 	exit 11
 fi
 
-mv $svc_cf "conf"
-scp "conf ${host}:/root
+cp $svc_cf conf
+scp conf ${host}:/root
 
 ssh -T $host << 'EOSSH'
 
@@ -43,15 +43,16 @@ then
 fi
 
 # Check whether the mount instruction is already present in fstab
-if [ ! `grep -q "${dev}" /etc/fstab` ]
+if [ ! $(grep -q $dev /etc/fstab) ]
 then
 	echo "$dev $mount_point ext4 defaults 0 2" >> /etc/fstab
 fi
+
 mount -t ext4 $dev $mount_point
 
-if [[ $? -ne 0 ]] ; 
+if [[ $? -ne 0 ]]  
 then
-   perror "El propio mandato del servicio ha fallado"
+   perror "El propio mandato mount ha fallado"
 	 exit 15
 fi
 EOSSH
