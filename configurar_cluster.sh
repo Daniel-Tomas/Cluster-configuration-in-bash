@@ -24,23 +24,23 @@ do
 
 
 	host=${BASH_REMATCH[1]}
+	host="-oStrictHostKeyChecking=no $host"
 	svc=${BASH_REMATCH[2]}
 	svc_cf=${BASH_REMATCH[3]}
 	
 	case $svc in
-		mount | nfs_server | nfs_client)
+		mount | raid | lvm | nis_server | nis_client | nfs_server | nfs_client | backup_server | backup_client)
 			if [[ ! -f $svc_cf ]] || [[ ! -r $svc_cf ]] 
 			then
 				perror "El siguiente fichero de configuracion de servicio no existe o no se puede leer: \n$svc_cf"
 	    			exit 2
 			fi
 			
-			# ssh -T $host : &> /dev/null
-			# echo $?
 			source ${svc}.sh
 			
 			if [[ $? -ne 0 ]] 
 			then
+				echo -e "-------- $svc ha fallado -------\n"
       	exit $? 
 			fi
 
