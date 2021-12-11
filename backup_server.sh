@@ -8,10 +8,6 @@ then
 	exit 81
 fi
 
-cp $svc_cf conf
-ssh-keyscan -H ${host} 2>/dev/null >> ~/.ssh/known_hosts 
-scp conf ${host}:/root &>/dev/null
-
 ssh -T $host  >/dev/null << 'EOSSH' 
 
 perror() { echo -e "$@" 1>&2; }
