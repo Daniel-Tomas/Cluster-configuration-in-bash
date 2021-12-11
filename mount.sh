@@ -8,10 +8,7 @@ then
 	exit 11
 fi
 
-cp $svc_cf conf
-scp conf ${host}:/root
-
-ssh -T $host << 'EOSSH'
+ssh -T $host >/dev/null << 'EOSSH'
 
 perror() { echo -e "$@" 1>&2; }
 
