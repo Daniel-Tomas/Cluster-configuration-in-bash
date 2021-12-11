@@ -1,5 +1,7 @@
 #!/bin/bash
 
+
+
 n_lines=$(cat $svc_cf | wc -l)
 
 if [[ $n_lines -ne 4 ]] 
@@ -7,10 +9,6 @@ then
 	perror "El fichero de perfil de servicio debe tener cuatro lineas"
 	exit 81
 fi
-
-cp $svc_cf conf
-ssh-keyscan -H ${host} 2>/dev/null >> ~/.ssh/known_hosts 
-scp conf ${host}:/root &>/dev/null
 
 ssh -T $host  >/dev/null << 'EOSSH' 
 
