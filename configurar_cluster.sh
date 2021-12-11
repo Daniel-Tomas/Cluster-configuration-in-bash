@@ -24,7 +24,7 @@ do
 
 
 	host=${BASH_REMATCH[1]}
-	host="-oStrictHostKeyChecking=no $host"
+	host="$host"
 	svc=${BASH_REMATCH[2]}
 	svc_cf=${BASH_REMATCH[3]}
 	
@@ -35,6 +35,8 @@ do
 				perror "El siguiente fichero de configuracion de servicio no existe o no se puede leer: \n$svc_cf"
 	    			exit 2
 			fi
+
+			echo "-------- $svc iniciando -------\n"
 			
 			source ${svc}.sh
 			
@@ -44,7 +46,7 @@ do
       	exit $? 
 			fi
 
-			echo -e "-------- $svc completado satisfactoriamente -------\n"
+			echo "-------- $svc completado satisfactoriamente -------\n"
 			;;
 		*)
 		perror "El siguiente servicio no se ofrece: \n$svc"
