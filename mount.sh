@@ -28,7 +28,7 @@ fi
 
 if [[ ! -d $mount_point ]] 
 then
-	mkdir $mount_point
+	mkdir -p $mount_point
 	if [[ $? -ne 0 ]] ; 
 	then
 		perror "Imposible crear el punto de montaje"
