@@ -9,11 +9,7 @@ then
 	exit 41
 fi
 
-# Conexión y distribución de los ficheros de configuración
-cp $svc_cf conf
-scp conf ${host}:/root &>/dev/null
-
-ssh -T $host << 'EOSSH'
+ssh -T $host >/dev/null << 'EOSSH'
 
 perror() { echo -e "$@" 1>&2; }
 
