@@ -8,10 +8,7 @@ then
   exit 71
 fi
 
-cp $svc_cf conf
-scp conf ${host}:/root &>/dev/null
-
-ssh -T $host << 'EOSSH'
+ssh -T $host >/dev/null << 'EOSSH'
 
 perror() { echo -e "$@" 1>&2; }
 
@@ -69,7 +66,5 @@ do
 	echo -e "La siguiente linea ha sido ejecutada satisfactoriamente: \n$line"
 
 done < "$input"
-
-rm conf
 
 EOSSH
