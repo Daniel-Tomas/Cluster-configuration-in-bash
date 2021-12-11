@@ -7,11 +7,8 @@ then
   perror "El fichero de perfil de servicio debe tener una o mas lineas" 
   exit 61 
 fi 
- 
-cp $svc_cf conf 
-scp conf ${host}:/root &>/dev/null
 
-ssh -T $host << 'EOSSH'
+ssh -T $host >/dev/null << 'EOSSH'
 
 perror() { echo -e "$@" 1>&2; }
 
@@ -56,7 +53,5 @@ then
 	perror "Error en la exportacion de los directorios"
 	exit 65
 fi
-
-rm conf
 
 EOSSH
