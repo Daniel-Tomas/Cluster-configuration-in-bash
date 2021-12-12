@@ -74,3 +74,5 @@ else
 fi
 
 EOSSH
+
+exit $?
