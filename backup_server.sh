@@ -31,3 +31,5 @@ then
 fi
 
 EOSSH
+
+exit $?
