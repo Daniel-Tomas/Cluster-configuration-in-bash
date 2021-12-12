@@ -55,3 +55,5 @@ then
 fi
 
 EOSSH
+
+exit $?
