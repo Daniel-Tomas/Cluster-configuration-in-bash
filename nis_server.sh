@@ -77,3 +77,5 @@ fi
 rm conf
 
 EOSSH
+
+exit $?
