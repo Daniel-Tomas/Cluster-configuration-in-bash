@@ -68,3 +68,5 @@ do
 done < "$input"
 
 EOSSH
+
+exit $?
