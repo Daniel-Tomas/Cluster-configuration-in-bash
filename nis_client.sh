@@ -69,3 +69,5 @@ then
 fi
 
 EOSSH
+
+exit $?
