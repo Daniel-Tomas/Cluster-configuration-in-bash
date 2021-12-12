@@ -64,3 +64,5 @@ do
 done < "$svc_cf"
 
 EOSSH
+
+exit $?
