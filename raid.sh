@@ -82,3 +82,5 @@ then
 fi
 
 EOSSH
+
+exit $?
