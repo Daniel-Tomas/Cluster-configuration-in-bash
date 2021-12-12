@@ -39,17 +39,20 @@ then
 	 exit 14
 fi
 
-# Check whether the mount instruction is already present in fstab
-if [ ! $(grep -q $dev /etc/fstab) ]
-then
-	echo "$dev $mount_point ext4 defaults 0 2" >> /etc/fstab
-fi
+mount ext4 $dev $mount_point
 
-mount -t ext4 $dev $mount_point
+# Check whether the mount instruction is already present in fstab and was mounted correctly
+if [[ $? -eq 0 ]] && [ ! $(grep -q $dev /etc/fstab) ]
+then
+	echo "$dev $mount_point auto defaults 0 2" >> /etc/fstab
+fi
 
 if [[ $? -ne 0 ]]  
 then
    perror "El propio mandato mount ha fallado"
 	 exit 15
 fi
+
 EOSSH
+
+exit $?
