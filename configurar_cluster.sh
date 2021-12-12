@@ -62,7 +62,7 @@ do
 			if [[ $? -ne 0 ]] 
 			then
 				echo -e "-------- $svc ha fallado -------\n"
-      	exit $? 
+      			exit $? 
 			fi
 			rm conf
 			echo -e "-------- $svc completado satisfactoriamente -------\n"
