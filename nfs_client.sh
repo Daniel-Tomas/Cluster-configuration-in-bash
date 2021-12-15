@@ -8,6 +8,16 @@ then
   exit 71
 fi
 
+while read line; do
+  n_words1=$(wc -w <<< $line) 
+done < $svc_cf
+
+if [[ $n_words1 -ne 3 ]]
+then
+	perror "El formato del fichero de perfil de servicio es incorrecto"
+	exit 72
+fi
+
 ssh -T $host >/dev/null << 'EOSSH'
 
 perror() { echo -e "$@" 1>&2; }
@@ -17,7 +27,7 @@ apt install -y nfs-common &>/dev/null
 if [[ $? -ne 0 ]]  
 then
   perror "Error en la instalacion de los paquetes necesarios"
-  exit 72
+  exit 73
 fi
 
 input=conf
@@ -29,7 +39,7 @@ do
   if [[ ! "$line" =~ $pattern ]] 
   then  
     perror "La siguiente linea no cumple con el formato correcto: \n$line"
-    exit 73
+    exit 74
   fi
 
 	server_host=${BASH_REMATCH[1]}
@@ -42,14 +52,14 @@ do
 	  if [[ $? -ne 0 ]] ; 
 	  then
 			perror "Imposible crear el punto de montaje"
-	    exit 74
+	    exit 75
 	  fi
 	
 	# In this case the mount point dir exists
 	elif [ ! -z "$(ls -A $mount_point)" ]
 	then
 	   perror "No esta vacio el directorio destino del punto de montaje"
-	   exit 75
+	   exit 76
 	fi
 	
 	mount -t nfs "${server_host}:$dir_to_import" $mount_point  
@@ -58,7 +68,7 @@ do
 	if [[ $? -ne 0 ]] ;  
 	then 
 	   perror "El propio mandato mount ha fallado" 
-	   exit 76 
+	   exit 77 
 	fi 
 	
 	echo "${server_host}:$dir_to_import $mount_point nfs defaults 0 2" >> /etc/fstab 

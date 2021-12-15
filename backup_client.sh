@@ -1,13 +1,27 @@
 #!/bin/bash
 
-
-
 n_lines=$(cat $svc_cf | wc -l)
 
 if [[ $n_lines -ne 4 ]] 
 then
 	perror "El fichero de perfil de servicio debe tener cuatro lineas"
 	exit 81
+fi
+
+while read line; do
+  n_words1=$(wc -w <<< $line) 
+  read line2
+  n_words2=$(wc -w <<< $line2)
+  read line3
+  n_words3=$(wc -w <<< $line3)
+  read line4
+  n_words4=$(wc -w <<< $line4)
+done < $svc_cf
+
+if [[ $n_words1 -ne 1 ]] || [[ $n_words2 -ne 1 ]] || [[ $n_words3 -ne 1 ]] || [[ $n_words4 -ne 1 ]]
+then
+	perror "El formato del fichero de perfil de servicio es incorrecto"
+	exit 82
 fi
 
 ssh -T $host  >/dev/null << 'EOSSH' 
@@ -37,25 +51,25 @@ hours=${content[3]}
 if [[ ! -d $local_dir ]] 
 then
     perror "El directorio del que hacer backup no existe o hay más de un valor por línea"
-	exit 82 
+	exit 83 
 fi
 
 if [[ $hours -gt 23 ]] || [[ $hours -lt 1 ]]
 then
 	perror "El valor introducido de horas no es correcto"
-	exit 83 
+	exit 84 
 fi
 
 if ! ipvalid "$remote_ip" 
 then
 	perror "La IP a la que conectar no es válida o hay más de un valor por línea"
-	exit 84 
+	exit 85
 fi
 
 if ! ping -c 1 "$remote_ip" >/dev/null
 then
 	perror "No se puede establecer conexión con la IP provista"
-	exit 85 
+	exit 86
 fi
 
 ssh-keyscan -H $remote_ip 2>/dev/null >> ~/.ssh/known_hosts 
@@ -66,11 +80,11 @@ then
 	if [[ $? -ne 0 ]]  
 	then
 		perror "No se puedo añadir el cronjob"
-		exit 86
+		exit 87
 	fi
 else
 	perror "El directorio remoto no existe"
-	exit 87 
+	exit 88
 fi
 
 EOSSH

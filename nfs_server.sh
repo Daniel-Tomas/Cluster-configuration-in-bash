@@ -8,6 +8,18 @@ then
   exit 61 
 fi 
 
+while read line; do
+  n_words1=$(wc -w <<< $line) 
+  read line2
+  n_words2=$(wc -w <<< $line2)
+done < $svc_cf
+
+if [[ $n_words1 -ne 1 ]] || [[ $n_words2 -ne 1 ]]
+then
+	perror "El formato del fichero de perfil de servicio es incorrecto"
+	exit 62
+fi
+
 ssh -T $host >/dev/null << 'EOSSH'
 
 perror() { echo -e "$@" 1>&2; }
@@ -17,7 +29,7 @@ apt install -y nfs-kernel-server &>/dev/null
 if [[ $? -ne 0 ]]  
 then
   perror "Error en la instalacion de los paquetes necesarios"
-	exit 62
+	exit 63
 fi
 
 input=conf
@@ -29,7 +41,7 @@ do
   if [[ ! "$line" =~ $pattern ]] 
   then  
     perror "La siguiente linea no cumple con el formato correcto: \n$line"
-    exit 63
+    exit 64
 	fi
 
 	dir_to_export=$line
@@ -37,7 +49,7 @@ do
 	if [[ ! -d $dir_to_export ]] 
 	then
 		perror "Directorio a exportar no existe o es un fichero de un tipo distinto a directorio"
-		exit 64
+		exit 65
 	fi
 	
 	echo "$dir_to_export *(rw,sync)" >> /etc/exports
@@ -51,7 +63,7 @@ exportfs -ra &>/dev/null
 if [[ $? -ne 0 ]]  
 then
 	perror "Error en la exportacion de los directorios"
-	exit 65
+	exit 66
 fi
 
 EOSSH

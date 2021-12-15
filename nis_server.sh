@@ -9,6 +9,16 @@ then
 	exit 41
 fi
 
+while read line; do
+  n_words1=$(wc -w <<< $line) 
+done < $svc_cf
+
+if [[ $n_words1 -ne 1 ]]
+then
+	perror "El formato del fichero de perfil de servicio es incorrecto"
+	exit 42
+fi
+
 ssh -T $host >/dev/null << 'EOSSH'
 
 perror() { echo -e "$@" 1>&2; }
@@ -22,7 +32,7 @@ sudo mount --bind /bin/true /usr/sbin/invoke-rc.d
 if [[ $? -ne 0 ]]  
 then
 	perror "Error en configuración previa a instalación de NIS"
-	exit 42
+	exit 43
 fi
 
 # Instalación no interactiva del servicio
@@ -32,7 +42,7 @@ sudo DEBIAN_FRONTEND=noninteractive apt -y install nis &> /dev/null
 if [[ $? -ne 0 ]]  
 then
 	perror "Error en instalación de NIS"
-	exit 43
+	exit 44
 fi
 
 # Reestablecemos todo
@@ -41,7 +51,7 @@ umount /usr/sbin/invoke-rc.d
 if [[ $? -ne 0 ]]  
 then
    	perror "Error en restablecimiento tras instalación de NIS"
-	exit 44
+	exit 45
 fi
 
 # Modificación del nombre de dominio en /etc/defaultdomain
@@ -71,7 +81,7 @@ wait $process_id
 if [[ $? -ne 0 ]]  
 then
 	perror "Error en arranque del servicio NIS"
-	exit 45
+	exit 46
 fi
 
 rm conf

@@ -8,6 +8,18 @@ then
 	exit 11
 fi
 
+while read line; do
+  n_words1=$(wc -w <<< $line) 
+  read line2
+  n_words2=$(wc -w <<< $line2)
+done < $svc_cf
+
+if [[ $n_words1 -ne 1 ]] || [[ $n_words2 -ne 1 ]]
+then
+	perror "El formato del fichero de perfil de servicio es incorrecto"
+	exit 12
+fi
+
 ssh -T $host >/dev/null << 'EOSSH'
 
 perror() { echo -e "$@" 1>&2; }
@@ -20,7 +32,7 @@ mount_point=`sed "2q;d" $svc_cf`
 if [[ ! -b $dev ]] ; 
 then
 	perror "El dispositivo a montar no existe o no es un dispositivo de bloque"
-	exit 12
+	exit 13
 fi
 
 if [[ ! -d $mount_point ]] 
@@ -29,14 +41,14 @@ then
 	if [[ $? -ne 0 ]] ; 
 	then
 		perror "Imposible crear el punto de montaje"
-		exit 13
+		exit 14
 	fi
 
 # In this case the mount point dir exists
 elif [ ! -z "$(ls -A $mount_point)" ]
 then
    perror "No esta vacio el directorio destino del punto de montaje"
-	 exit 14
+	 exit 15
 fi
 
 mount ext4 $dev $mount_point
@@ -50,7 +62,7 @@ fi
 if [[ $? -ne 0 ]]  
 then
    perror "El propio mandato mount ha fallado"
-	 exit 15
+	 exit 16
 fi
 
 EOSSH
