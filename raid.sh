@@ -16,7 +16,7 @@ while read line; do
   n_words3=$(wc -w <<< $line3)
 done < $svc_cf
 
-if [[ $n_words1 -ne 1 ]] || [[ $n_words2 -ne 1 ]] || [[ $n_words3 -ne 2 ]]
+if [[ $n_words1 -ne 1 ]] || [[ $n_words2 -ne 1 ]] || [[ $n_words3 -lt 1 ]]
 then
 	perror "El formato del fichero de perfil de servicio es incorrecto"
 	exit 22

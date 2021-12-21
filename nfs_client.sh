@@ -9,14 +9,13 @@ then
 fi
 
 while read line; do
-  n_words1=$(wc -w <<< $line) 
+  n_words1=$(wc -w <<< $line)
+  if [[ $n_words1 -ne 3 ]]
+	then
+		perror "El formato del fichero de perfil de servicio es incorrecto"
+		exit 72
+	fi
 done < $svc_cf
-
-if [[ $n_words1 -ne 3 ]]
-then
-	perror "El formato del fichero de perfil de servicio es incorrecto"
-	exit 72
-fi
 
 ssh -T $host >/dev/null << 'EOSSH'
 
