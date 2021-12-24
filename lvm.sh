@@ -5,25 +5,24 @@ n_lines=$(cat $svc_cf | wc -l)
 if [[ $n_lines -lt 3 ]] 
 then
 	perror "El fichero de perfil de servicio debe tener al menos tres lineas"
-	exit 31
+	exit 31s
 fi
 
-while read line; do
-  n_words1=$(wc -w <<< $line) 
-  read line2
-  n_words2=$(wc -w <<< $line2)
-  read line3
-  n_words3=$(wc -w <<< $line3)
+i=0
+while ((i++)); read line; do
+  words=$(wc -w <<< $line) 
+  if [[ $i -eq 1 ]] && [[ $words -ne 1 ]]
+    then
+    perror "El formato del fichero de perfil de servicio es incorrecto $i $line"
+    exit 321
+  elif [[ $i -gt 2 ]] && [[ $words -ne 2 ]]
+    then
+    perror "El formato del fichero de perfil de servicio es incorrecto $i $words"
+    exit 322
+  fi
 done < $svc_cf
 
-if [[ $n_words1 -ne 1 ]] || [[ $n_words2 -ne 3 ]] || [[ $n_words3 -ne 2 ]]
-then
-    perror "El formato del fichero de perfil de servicio es incorrecto"
-    exit 32
-fi
-
 ssh -T $host  >/dev/null << 'EOSSH' 
-
 perror() { echo -e "$@" 1>&2; }
 apt install -y lvm2 &>/dev/null
 if [[ $? -ne 0 ]]  
@@ -68,15 +67,31 @@ do
             perror "El número de elementos en esta línea es incorrecto. Se esperaban 2"
             exit 37
         fi
+
+        size=${lvp[1]}
+        unit="${size: -1}"
+        bytes_available="$(vgs -o free --units "${unit,,}" | tr -d -c 0-9)"
+
+        if [[ $x =~ (^|,)"$y"(,|$) ]]
+        then 
+            bytes_available="${bytes_available::-2}"
+        fi
+
+        perror "${size%?} --- ${bytes_available}"
+        if [[ ${size%?} -gt ${bytes_available} ]]
+        then
+            perror "El volumen lógico que se intenta crear requiere más espacio del disponible"
+            exit 38
+        fi
+
         lvcreate -L ${lvp[1]} -n ${lvp[0]} $vgn
         if [[ $? -ne 0 ]]
         then
             perror "Error en la creación del volumen lógico"
-            exit 38
+            exit 39
         fi
     fi
 done < "$svc_cf"
-
 EOSSH
 
 exit $?
