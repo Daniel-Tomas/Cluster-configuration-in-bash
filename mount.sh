@@ -51,7 +51,7 @@ then
 	 exit 15
 fi
 
-mount ext4 $dev $mount_point
+mount $dev $mount_point
 
 # Check whether the mount instruction is already present in fstab and was mounted correctly
 if [[ $? -eq 0 ]] && [ ! $(grep -q $dev /etc/fstab) ]
