@@ -8,20 +8,6 @@ then
 	exit 21
 fi
 
-while read line; do
-  n_words1=$(wc -w <<< $line) 
-  read line2
-  n_words2=$(wc -w <<< $line2)
-  read line3
-  n_words3=$(wc -w <<< $line3)
-done < $svc_cf
-
-if [[ $n_words1 -ne 1 ]] || [[ $n_words2 -ne 1 ]] || [[ $n_words3 -lt 1 ]]
-then
-	perror "El formato del fichero de perfil de servicio es incorrecto"
-	exit 22
-fi
-
 ssh -T $host >/dev/null << 'EOSSH'
 
 perror() { echo -e "$@" 1>&2; }
@@ -68,12 +54,26 @@ then
 	exit 27
 fi
 
+if [[ $raid_level -eq 0 ]] || [[ $raid_level -eq 1 ]] && [[ $n_devices -lt 2 ]]
+then
+	perror "Número de discos incompatible con nivel de raid"
+	exit 28
+elif [[ $raid_level -eq 4 ]] || [[ $raid_level -eq 5 ]] && [[ $n_devices -lt 3 ]]
+then
+	perror "Número de discos incompatible con nivel de raid"
+	exit 28
+elif [[ $raid_level -eq 6 ]] || [[ $raid_level -eq 10 ]] && [[ $n_devices -lt 4 ]]
+then
+	perror "Número de discos incompatible con nivel de raid"
+	exit 28
+fi
+
 for device in $devices
 	do
 		if [[ ! -b $device ]]
 	  then
 	  	perror "El siguiente dispositivo no existe o no es un dispositivo de bloque: \n$device"
-			exit 28
+			exit 29
 		fi
 done
 
@@ -83,7 +83,7 @@ yes | mdadm --create --auto=yes --force $new_raid --level=$raid_level --raid-dev
 if [[ $? -ne 0 ]]
 then
    perror "El propio mandato mdadm ha fallado"
-	 exit 29
+	 exit 30
 fi
 
 
@@ -92,7 +92,7 @@ mdadm --detail --scan | tee -a /etc/mdadm/mdadm.conf
 if [[ $? -ne 0 ]]
 then
    perror "No se ha podido completar la configuracion persistente"
-	 exit 30
+	 exit 31
 fi
 
 EOSSH
