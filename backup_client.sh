@@ -70,7 +70,7 @@ ssh-keyscan -H $remote_ip 2>/dev/null >> ~/.ssh/known_hosts
 
 if ssh $remote_ip "[ -d $remote_dir ]"
 then
-	(crontab -l 2>/dev/null; echo "* */$hours * * * rsync --recursive $local_dir $remote_ip:$remote_dir") | crontab -
+	(crontab -l 2>/dev/null; echo "0 */$hours * * * rsync --recursive $local_dir $remote_ip:$remote_dir") | crontab -
 	if [[ $? -ne 0 ]]  
 	then
 		perror "No se puedo añadir el cronjob"
