@@ -54,15 +54,15 @@ then
 	exit 27
 fi
 
-if [[ $raid_level -eq 0 ]] || [[ $raid_level -eq 1 ]] && [[ $n_devices -lt 2 ]]
+if [[ ($raid_level -eq 0  ||  $raid_level -eq 1)  &&  $n_devices -lt 2 ]]
 then
 	perror "Número de discos incompatible con nivel de raid"
 	exit 28
-elif [[ $raid_level -eq 4 ]] || [[ $raid_level -eq 5 ]] && [[ $n_devices -lt 3 ]]
+elif [[ ($raid_level -eq 4  ||  $raid_level -eq 5)  &&  $n_devices -lt 3 ]]
 then
 	perror "Número de discos incompatible con nivel de raid"
 	exit 28
-elif [[ $raid_level -eq 6 ]] || [[ $raid_level -eq 10 ]] && [[ $n_devices -lt 4 ]]
+elif [[ ($raid_level -eq 6  ||  $raid_level -eq 10)  &&  $n_devices -lt 4 ]]
 then
 	perror "Número de discos incompatible con nivel de raid"
 	exit 28
